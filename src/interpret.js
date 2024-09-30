@@ -1,3 +1,5 @@
+const DEBUG = false;
+
 class Plane {
   constructor(code) {
     this.plane = code.split("\n").map((line) => line.split(""));
@@ -51,10 +53,8 @@ class Plane {
 function interpret(code) {
   let _i = 0;
   const plane = new Plane(code);
-  let x = 0;
-  let y = 0;
 
-  plane.print();
+  if (DEBUG) plane.print();
 
   let output = "";
   const stack = [];
@@ -68,12 +68,12 @@ function interpret(code) {
     console.log("  Output:", output);
   };
 
-  while (!plane.isFinished && _i < 200) {
+  while (!plane.isFinished && _i < 50) {
     const char = plane.currentChar;
-    printState();
+    if (DEBUG) printState();
 
     if (/\d/.test(char)) {
-      console.log("                   Pushing", +char);
+      if (DEBUG) console.log("                   Pushing", +char);
       stack.push(+char);
     } else {
       switch (char) {
@@ -172,18 +172,18 @@ function interpret(code) {
           plane.move();
           break;
 
-        case "p":
-          y = stack.pop();
-          x = stack.pop();
+        case "p": {
+          const y = stack.pop();
+          const x = stack.pop();
           plane.plane[y][x] = String.fromCharCode(stack.pop());
           break;
-
-        case "g":
-          y = stack.pop();
-          x = stack.pop();
-          stack.push(plane.plane[y][x]);
+        }
+        case "g": {
+          const y = stack.pop();
+          const x = stack.pop();
+          stack.push(plane.plane[y][x].charCodeAt(0));
           break;
-
+        }
         case " ":
           break;
       }
@@ -193,4 +193,6 @@ function interpret(code) {
   return output;
 }
 
-console.log(interpret("08>:1-:v v *_$.@\n  ^    _$>\\:^"));
+//console.log('Factorial (8! = 40320):   ', interpret("08>:1-:v v *_$.@\n  ^    _$>\\:^"));
+
+console.log("Quine:   ", interpret("01->1# +# :# 0# g# ,# :# 5# 8# *# 4# +# -# _@"));
