@@ -1,18 +1,15 @@
-# codewars__befunge_interpreter  in JS
+# codewars__befunge_interpreter  in PYTHON
 
-[codewars](https://www.codewars.com/kata/526c7b931666d07889000a3c/train/javascript/66c0a7a5b8fe04e3b903ad68)
+[codewars](https://www.codewars.com/kata/526c7b931666d07889000a3c/train/python)
 
 ## Setup
 
 ```bash
 sudo apt update
-sudo apt install nodejs npm
+sudo apt install python3 python3-pip
 
-npm init
+python3 -m venv venv
 
-npm install eslint --save-dev
-npx eslint --init
-
-npm install --save-dev prettier
+source venv/bin/activate
 ```
 
