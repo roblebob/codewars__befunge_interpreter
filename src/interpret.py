@@ -1,9 +1,13 @@
+import random
+
+DEBUG = False
+
+
 class Plane:
     def __init__(self, code):
         self.plane = [list(row) for row in code.split("\n")]
-        self.pos = [0, 0]
-        self.direction = 0
-        self.output = ""
+        self.pos = [0, 0] # [row, column]
+        self.direction = [0, 1]
  
     def print(self):
         for row in self.plane:
@@ -39,15 +43,76 @@ class Plane:
                 self.pos[0] += 1
 
             else:
-                # throw("Error")
-                pass
+                raise Exception("Invalid position")
+
+
+_i = 0
+plane = Plane(code)
+output = ""
+stack = []
+
+def printState():
+    print(f"i: {_i}")
+    print(f"  pos: {plane.pos},   direction: {plane.direction}")
+    print(f"  char: {plane.get_current_char()}")
+    print(f"  stack: {stack}")
+    print(f"  output: {output}")
+    _i += 1
+
 
 
 def interpret(code):
-    
-    plane = Plane(code)
-    
-    plane.print()
+        
+    if DEBUG:
+        plane.print()
+
+    while not plane.is_finished():
+        char = plane.get_current_char()
+
+        if char.isdigit():
+            stack.append(int(char))
+
+        elif char == ">":
+            plane.direction = [0, 1]
+
+        elif char == "<":
+            plane.direction = [0, -1]
+
+        elif char == "v":
+            plane.direction = [1, 0]
+
+        elif char == "^":
+            plane.direction = [-1, 0]
+
+        elif char == "?":
+            plane.direction = [[0, 1], [0, -1], [1, 0], [-1, 0]][random.randint(0, 3)]        
+
+
+
+
+        elif char == "+":
+            stack.append(stack.pop() + stack.pop())
+
+        elif char == "-":
+            stack.append(-stack.pop() + stack.pop())
+
+        elif char == "*":
+            stack.append(stack.pop() * stack.pop())
+
+        elif char == "/":
+            stack.append(int((1 / stack.pop()) * stack.pop()))
+
+        elif char == "%":
+            a = stack.pop()
+            b = stack.pop()
+            stack.append(stack.pop() % stack.pop())
+
+        elif char == "!":
+            stack.append(1 if stack.pop() == 0 else 0)
+
+        elif char == "`":
+            stack.append(1 if stack.pop() < stack.pop() else 0)
+
 
 
 
