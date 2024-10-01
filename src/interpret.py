@@ -1,8 +1,5 @@
 import random
-
-DEBUG = False
-
-
+ 
 class Plane:
     def __init__(self, code):
         self.plane = [list(row) for row in code.split("\n")]
@@ -46,48 +43,20 @@ class Plane:
                 raise Exception("Invalid position")
 
 
-_i = 0
-plane = Plane(code)
-output = ""
-stack = []
 
-def printState():
-    print(f"i: {_i}")
-    print(f"  pos: {plane.pos},   direction: {plane.direction}")
-    print(f"  char: {plane.get_current_char()}")
-    print(f"  stack: {stack}")
-    print(f"  output: {output}")
-    _i += 1
-
-
+ 
 
 def interpret(code):
-        
-    if DEBUG:
-        plane.print()
+    
+    plane = Plane(code)
+    output = ""
+    stack = []
 
     while not plane.is_finished():
         char = plane.get_current_char()
 
         if char.isdigit():
             stack.append(int(char))
-
-        elif char == ">":
-            plane.direction = [0, 1]
-
-        elif char == "<":
-            plane.direction = [0, -1]
-
-        elif char == "v":
-            plane.direction = [1, 0]
-
-        elif char == "^":
-            plane.direction = [-1, 0]
-
-        elif char == "?":
-            plane.direction = [[0, 1], [0, -1], [1, 0], [-1, 0]][random.randint(0, 3)]        
-
-
 
 
         elif char == "+":
@@ -114,6 +83,77 @@ def interpret(code):
             stack.append(1 if stack.pop() < stack.pop() else 0)
 
 
+        elif char == ">":
+            plane.direction = [0, 1]
+
+        elif char == "<":
+            plane.direction = [0, -1]
+
+        elif char == "v":
+            plane.direction = [1, 0]
+
+        elif char == "^":
+            plane.direction = [-1, 0]
+
+        elif char == "?":
+            plane.direction = [[0, 1], [0, -1], [1, 0], [-1, 0]][random.randint(0, 3)]        
 
 
-interpret(">987v>.v\nv456<  :\n>321 ^ _@")
+        elif char == "_":
+            plane.direction = [0, 1] if stack.pop() == 0 else [0, -1]
+
+        elif char == "|":
+            plane.direction = [1, 0] if stack.pop() == 0 else [-1, 0]
+
+        elif char == "\"":
+            plane.move()
+            while plane.get_current_char() != "\"":
+                stack.append(ord(plane.get_current_char()))
+                plane.move()
+
+        elif char == ":":
+            stack.append(0 if len(stack) == 0 else stack[-1])
+            
+        elif char == "\\":
+            if len(stack) < 2:
+                stack.append(0)
+            else:
+                a = stack.pop()
+                b = stack.pop()
+                stack.append(a)
+                stack.append(b)
+
+        elif char == "$":
+            stack.pop()
+        
+        elif char == ".":
+            output += str(stack.pop())
+
+        elif char == ",":
+            output += chr(stack.pop())
+
+        elif char == "#":
+            plane.move()
+
+        elif char == "p":
+            y = stack.pop()
+            x = stack.pop()
+            v = stack.pop()
+            plane.plane[y][x] = chr(v)
+
+        elif char == "g":
+            y = stack.pop()
+            x = stack.pop()
+            stack.append(ord(plane.plane[y][x]))
+
+        elif char == " ":
+            pass
+
+        else:
+            raise Exception(f"Invalid character: {char}")
+        
+        plane.move()
+    
+    return output
+
+print(interpret(">987v>.v\nv456<  :\n>321 ^ _@"))
